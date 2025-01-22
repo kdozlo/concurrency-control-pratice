@@ -7,16 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class StockService {
 
     private final StockRepository stockRepository;
 
-    @Transactional
-    public void decrease(Long id, Long quantity) {
+//    @Transactional
+    public synchronized void decrease(Long id, Long quantity) {
         Stock stock = stockRepository.findById(id).orElseThrow(() -> new RuntimeException("no such id value data: " + id));
-
         stock.decrease(quantity);
+
+        stockRepository.saveAndFlush(stock);
     }
 }
