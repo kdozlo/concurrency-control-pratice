@@ -26,6 +26,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.43.0'
 }
 
 tasks.named('test') {
