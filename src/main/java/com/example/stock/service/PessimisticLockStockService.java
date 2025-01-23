@@ -14,7 +14,7 @@ public class PessimisticLockStockService {
     private final StockRepository stockRepository;
 
     @Transactional
-    public synchronized void decrease(Long id, Long quantity) {
+    public void decrease(Long id, Long quantity) {
         Stock stock = stockRepository.findByIdWithPessimisticLock(id).orElseThrow(() -> new RuntimeException("no such id value data: " + id));
         stock.decrease(quantity);
 
