@@ -1,4 +1,4 @@
-package com.example.stock.service;
+package com.example.stock.facade;
 
 import com.example.stock.domain.Stock;
 import com.example.stock.repository.StockRepository;
@@ -14,30 +14,17 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class StockServiceTest {
-
-    @Autowired
-    private PessimisticLockStockService stockService;
+class OptimisticLockStockFacadeTest {
 
     @Autowired
     private StockRepository stockRepository;
 
+    @Autowired
+    private OptimisticLockStockFacade optimisticLockStockFacade;
+
     @AfterEach
     public void after() {
         stockRepository.deleteAll();
-    }
-
-    @Test
-    public void 재고감소() throws Exception {
-        //given
-        Stock pre = stockRepository.save(new Stock(1L, 100L));
-
-        //when
-        stockService.decrease(pre.getId(), 1L);
-
-        //then
-        Stock after = stockRepository.findById(pre.getId()).orElseThrow(() -> new RuntimeException("no such id value data: " + 1L));
-        assertThat(after.getQuantity()).isEqualTo(99L);
     }
 
     @Test
@@ -52,7 +39,9 @@ class StockServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    stockService.decrease(pre.getId(), 1L);
+                    optimisticLockStockFacade.decrease(pre.getId(), 1L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 } finally {
                     latch.countDown();
                 }
